@@ -1,0 +1,473 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Cursor Rules - Enterprise Customer Feedback Tool
+
+## Project Overview
+You are working on an enterprise-grade customer feedback collection and analysis platform. This is a sophisticated SaaS application targeting startups, growing businesses, and SaaS companies. The frontend is built with Next.js 15 using the App Router pattern, emphasizing performance, accessibility, and maintainability.
+
+## Core Technology Stack & Architecture Principles
+
+### Primary Technologies
+- **Next.js 15** with App Router (latest stable version)
+- **TypeScript** in strict mode for enterprise-level type safety
+- **React 18** with concurrent features and Suspense patterns
+- **Tailwind CSS v4** with custom design system implementation
+- **Framer Motion** for sophisticated animations and micro-interactions
+
+### State Management Strategy
+- **TanStack Query v5** for all server state management and caching
+- **Zustand** for client-side global state (user auth, theme, UI state)
+- **React Hook Form** with Zod validation for all form handling
+- **React Context** used sparingly, only for deeply nested component trees
+
+### UI Component Architecture
+- **Radix UI** primitives as foundation for accessible, unstyled components
+- **CVA (Class Variance Authority)** for component variant management
+- **Tailwind Merge** for conditional styling conflicts resolution
+- **Lucide React** for consistent iconography throughout application
+
+## Directory Structure & File Organization
+
+### Strict Directory Structure
+```
+src/
+├── app/                          # Next.js 15 App Router
+│   ├── (auth)/                   # Route groups for authentication pages
+│   ├── (dashboard)/              # Protected dashboard routes with middleware
+│   ├── globals.css               # Global styles and Tailwind imports
+│   ├── layout.tsx                # Root layout with providers and metadata
+│   └── page.tsx                  # Landing page with marketing content
+├── components/
+│   ├── ui/                       # Base UI components (Button, Input, etc.)
+│   ├── forms/                    # Form components and field components
+│   ├── charts/                   # Data visualization components
+│   ├── dashboard/                # Dashboard-specific feature components
+│   └── layout/                   # Layout components (Header, Sidebar, etc.)
+├── lib/
+│   ├── utils.ts                  # Utility functions and helpers
+│   ├── validations.ts            # Zod schemas for comprehensive validation
+│   ├── api.ts                    # Axios client configuration with interceptors
+│   └── constants.ts              # Application constants and configuration
+├── hooks/                        # Custom React hooks for reusable logic
+├── store/                        # Zustand store definitions and slices
+├── types/                        # TypeScript interfaces and type definitions
+└── styles/                       # Additional styling files and theme config
+```
+
+### File Naming Conventions
+- **Components**: PascalCase (e.g., `FeedbackFormBuilder.tsx`)
+- **Hooks**: camelCase with "use" prefix (e.g., `useFeedbackData.ts`)
+- **Utilities**: camelCase (e.g., `formatDate.ts`)
+- **Types**: PascalCase with descriptive names (e.g., `FeedbackFormTypes.ts`)
+- **Constants**: SCREAMING_SNAKE_CASE for values, camelCase for objects
+
+## Code Quality & Standards
+
+### TypeScript Implementation
+- **Strict mode enabled** with comprehensive type checking
+- **Interface over type** for object definitions to enable declaration merging
+- **Generic types** used for reusable components and utility functions
+- **Proper null checking** with optional chaining and nullish coalescing
+- **Return type annotations** for all functions, especially public APIs
+- **Avoid 'any' type** - use 'unknown' and proper type guards instead
+
+### Component Development Guidelines
+- **Functional components only** with React hooks for state management
+- **Props interfaces** clearly defined with JSDoc comments for complex props
+- **Default props** using ES6 default parameters, not React defaultProps
+- **Component composition** favored over prop drilling or inheritance patterns
+- **Error boundaries** implemented for all major feature sections
+- **Proper loading and error states** for all asynchronous operations
+
+### Import Organization Standards
+```typescript
+// External library imports first
+import React from 'react'
+import { NextPage } from 'next'
+import { useQuery } from '@tanstack/react-query'
+
+// Internal imports organized by proximity
+import { Button } from '@/components/ui/button'
+import { useFeedbackStore } from '@/store/feedback'
+import { FeedbackFormSchema } from '@/lib/validations'
+
+// Type imports last, using 'import type' syntax
+import type { FeedbackForm, UserPreferences } from '@/types'
+```
+
+## Performance & Optimization Requirements
+
+### React Performance Patterns
+- **React.memo** for components with expensive renders or frequent re-renders
+- **useMemo** for expensive calculations that depend on specific dependencies
+- **useCallback** for functions passed to child components to prevent re-renders
+- **Lazy loading** with React.lazy() for non-critical components
+- **Code splitting** at route level and large component level
+- **Virtual scrolling** implementation for large data sets (feedback lists, analytics)
+
+### Next.js Optimization Strategies
+- **Dynamic imports** for heavy third-party libraries or complex components
+- **Image optimization** using Next.js Image component with proper sizing
+- **Font optimization** with next/font for self-hosted fonts
+- **Bundle analysis** regularly performed to identify optimization opportunities
+- **Prefetching** strategic implementation for critical user navigation paths
+- **Static generation** where appropriate for marketing and documentation pages
+
+## Security Implementation Standards
+
+### Input Validation & Sanitization
+- **All user inputs** validated using Zod schemas on both client and server
+- **XSS prevention** through proper HTML escaping and sanitization
+- **File upload validation** with type checking and size limitations
+- **Rate limiting** implemented on client side for API calls
+- **Environment variables** properly configured with validation schemas
+- **Secure headers** configured in next.config.js for production deployment
+
+### Authentication & Authorization
+- **JWT token handling** with automatic refresh and secure storage preparation
+- **Route protection** using Next.js middleware for dashboard access
+- **Role-based access control** architecture prepared for future implementation
+- **Session management** with proper cleanup on logout
+- **CSRF protection** preparation for form submissions
+- **API key management** interface for user integrations
+
+## UI/UX Design System Implementation
+
+### Design Token Structure
+```typescript
+// Example of consistent design token usage
+const theme = {
+  colors: {
+    primary: {
+      50: '#f0f9ff',
+      500: '#3b82f6',
+      600: '#2563eb',
+      700: '#1d4ed8',
+    },
+    semantic: {
+      success: '#10b981',
+      warning: '#f59e0b',
+      error: '#ef4444',
+      info: '#6366f1',
+    }
+  },
+  spacing: {
+    // Use Tailwind's spacing scale consistently
+  },
+  typography: {
+    // Consistent font sizing and line heights
+  }
+}
+```
+
+### Component Variant Patterns
+```typescript
+// Use CVA for consistent component variants
+const buttonVariants = cva(
+  "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        outline: "border border-input hover:bg-accent hover:text-accent-foreground",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "underline-offset-4 hover:underline text-primary",
+      },
+      size: {
+        default: "h-10 py-2 px-4",
+        sm: "h-9 px-3 rounded-md",
+        lg: "h-11 px-8 rounded-md",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+```
+
+### Responsive Design Principles
+- **Mobile-first approach** using Tailwind's responsive utility classes
+- **Breakpoint consistency** following Tailwind's default breakpoint system
+- **Touch-friendly interfaces** with appropriate sizing for mobile interactions
+- **Progressive enhancement** ensuring basic functionality without JavaScript
+- **Flexible layouts** using CSS Grid and Flexbox appropriately
+- **Accessible navigation** that works across all device types and input methods
+
+## Data Fetching & State Management Patterns
+
+### TanStack Query Implementation
+```typescript
+// Consistent query key factory pattern
+export const feedbackKeys = {
+  all: ['feedback'] as const,
+  lists: () => [...feedbackKeys.all, 'list'] as const,
+  list: (filters: FeedbackFilters) => [...feedbackKeys.lists(), { filters }] as const,
+  details: () => [...feedbackKeys.all, 'detail'] as const,
+  detail: (id: string) => [...feedbackKeys.details(), id] as const,
+}
+
+// Custom hook pattern for data fetching
+export function useFeedbackList(filters: FeedbackFilters) {
+  return useQuery({
+    queryKey: feedbackKeys.list(filters),
+    queryFn: () => fetchFeedbackList(filters),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  })
+}
+```
+
+### Form Handling Patterns
+```typescript
+// Comprehensive form handling with validation
+const feedbackFormSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(100, 'Title too long'),
+  description: z.string().min(10, 'Description must be at least 10 characters'),
+  category: z.enum(['bug', 'feature', 'improvement']),
+  priority: z.enum(['low', 'medium', 'high']),
+})
+
+export function FeedbackForm() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<FeedbackFormData>({
+    resolver: zodResolver(feedbackFormSchema),
+    defaultValues: {
+      priority: 'medium',
+    },
+  })
+
+  const mutation = useMutation({
+    mutationFn: createFeedback,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: feedbackKeys.lists() })
+      reset()
+      toast.success('Feedback submitted successfully')
+    },
+    onError: (error) => {
+      toast.error('Failed to submit feedback')
+    },
+  })
+
+  return (
+    // Form implementation with proper error handling and loading states
+  )
+}
+```
+
+## Accessibility & Inclusive Design Requirements
+
+### WCAG 2.1 AA Compliance
+- **Semantic HTML** used throughout with proper heading hierarchy
+- **ARIA labels** and descriptions for complex interactive elements
+- **Keyboard navigation** fully functional for all interactive elements
+- **Color contrast ratios** meeting or exceeding WCAG requirements
+- **Focus management** properly implemented for modals and dynamic content
+- **Screen reader compatibility** tested with actual assistive technologies
+
+### Inclusive Design Patterns
+- **Alternative text** provided for all meaningful images and icons
+- **Error messages** clearly associated with form fields using aria-describedby
+- **Loading states** announced to screen readers with proper ARIA live regions
+- **Motion preferences** respected with prefers-reduced-motion media queries
+- **Font size scaling** supported without breaking layout or functionality
+- **High contrast mode** compatibility ensured for Windows users
+
+## Error Handling & User Experience
+
+### Comprehensive Error Boundaries
+```typescript
+// Error boundary implementation for graceful error handling
+class FeatureErrorBoundary extends React.Component<
+  { children: React.ReactNode; fallback?: React.ComponentType<{ error: Error }> },
+  { hasError: boolean; error?: Error }
+> {
+  constructor(props) {
+    super(props)
+    this.state = { hasError: false }
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error }
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    // Log error to monitoring service
+    console.error('Component error:', error, errorInfo)
+  }
+
+  render() {
+    if (this.state.hasError) {
+      const FallbackComponent = this.props.fallback || DefaultErrorFallback
+      return <FallbackComponent error={this.state.error!} />
+    }
+
+    return this.props.children
+  }
+}
+```
+
+### Loading State Management
+- **Skeleton loaders** for anticipated content layouts
+- **Progressive loading** showing partial content while additional data loads
+- **Optimistic updates** for immediate user feedback on actions
+- **Retry mechanisms** for failed network requests with exponential backoff
+- **Offline handling** with appropriate messaging and functionality degradation
+- **Timeout handling** for long-running operations with user feedback
+
+## Testing Strategy & Quality Assurance
+
+### Component Testing Approach
+```typescript
+// Example of comprehensive component testing
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import userEvent from '@testing-library/user-event'
+import { FeedbackForm } from './FeedbackForm'
+
+describe('FeedbackForm', () => {
+  let queryClient: QueryClient
+
+  beforeEach(() => {
+    queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
+  })
+
+  const renderWithProviders = (component: React.ReactElement) => {
+    return render(
+      <QueryClientProvider client={queryClient}>
+        {component}
+      </QueryClientProvider>
+    )
+  }
+
+  test('validates required fields and shows error messages', async () => {
+    renderWithProviders(<FeedbackForm />)
+    
+    const submitButton = screen.getByRole('button', { name: /submit/i })
+    fireEvent.click(submitButton)
+
+    await waitFor(() => {
+      expect(screen.getByText('Title is required')).toBeInTheDocument()
+    })
+  })
+})
+```
+
+### End-to-End Testing Preparation
+- **User journey testing** covering complete workflows from authentication to feedback submission
+- **Cross-browser testing** ensuring compatibility across Chrome, Firefox, Safari, and Edge
+- **Mobile device testing** on actual devices, not just browser developer tools
+- **Performance testing** with Lighthouse CI integration for automated performance monitoring
+- **Accessibility testing** with automated tools and manual screen reader testing
+- **Security testing** including XSS prevention and input validation verification
+
+## Environment Configuration & Deployment
+
+### Environment Variable Management
+```typescript
+// Comprehensive environment configuration with validation
+import { z } from 'zod'
+
+const envSchema = z.object({
+  NODE_ENV: z.enum(['development', 'staging', 'production']),
+  NEXT_PUBLIC_APP_URL: z.string().url(),
+  NEXT_PUBLIC_API_BASE_URL: z.string().url(),
+  DATABASE_URL: z.string().min(1),
+  JWT_SECRET: z.string().min(32),
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+})
+
+export const env = envSchema.parse(process.env)
+```
+
+### Build Optimization Configuration
+- **Bundle analyzer** integration for regular bundle size monitoring
+- **Tree shaking** optimization ensuring unused code elimination
+- **Code splitting** at appropriate boundaries for optimal loading
+- **Asset optimization** with proper compression and caching headers
+- **CDN configuration** for static asset delivery optimization
+- **Performance budgets** enforced through CI/CD pipeline checks
+
+## Feature Implementation Priorities
+
+### Phase 1 Critical Features (Must Implement First)
+1. **Authentication system** with secure user registration and login flows
+2. **Basic feedback form builder** supporting essential question types and logic
+3. **Form sharing capabilities** with embed code generation and public access
+4. **Fundamental analytics dashboard** displaying key metrics and basic visualizations
+5. **Responsive design implementation** ensuring flawless mobile and desktop experiences
+6. **Account management interface** for user profile and basic settings
+
+### Phase 1 Enhanced Features (Implement After Critical Features)
+1. **Advanced form builder** with conditional logic and complex question types
+2. **Detailed analytics** with filtering, segmentation, and export capabilities
+3. **Team collaboration** preparation with user interface and permission structures
+4. **Third-party integration** preparation with API management and webhook interfaces
+5. **Advanced customization** options for form appearance and branding
+6. **Real-time notification** systems for feedback alerts and team updates
+
+## Code Documentation & Maintenance
+
+### JSDoc Documentation Standards
+```typescript
+/**
+ * Custom hook for managing feedback form state and submission
+ * 
+ * @param initialData - Optional initial form data for editing existing feedback
+ * @param onSuccess - Callback function executed after successful form submission
+ * @param onError - Callback function executed when form submission fails
+ * 
+ * @returns Object containing form methods, state, and submission handlers
+ * 
+ * @example
+ * ```typescript
+ * const { register, handleSubmit, isSubmitting, errors } = useFeedbackForm({
+ *   onSuccess: (data) => console.log('Feedback submitted:', data),
+ *   onError: (error) => console.error('Submission failed:', error)
+ * })
+ * ```
+ */
+export function useFeedbackForm(options: FeedbackFormOptions) {
+  // Implementation with comprehensive error handling and validation
+}
+```
+
+### Component Documentation Requirements
+- **Purpose and usage** clearly documented for each component
+- **Props interface** with descriptions and examples for complex props
+- **State management** explanation for components with complex internal state
+- **Performance considerations** noted for components with optimization requirements
+- **Accessibility features** documented for components with special a11y implementations
+- **Integration examples** provided for components that interact with external systems
+
+## Final Implementation Guidelines
+
+### Development Workflow Standards
+- **Feature branch workflow** with descriptive branch names following convention
+- **Commit message standards** using conventional commits for automated changelog generation
+- **Code review requirements** ensuring all code passes through peer review process
+- **Testing coverage** maintaining high test coverage for critical user paths
+- **Performance monitoring** integrated into development workflow with regular audits
+- **Security scanning** automated tools integrated into CI/CD pipeline
+
+### Production Readiness Checklist
+- **Error monitoring** configured with comprehensive error tracking and alerting
+- **Performance monitoring** set up with Core Web Vitals tracking and optimization
+- **SEO optimization** implemented with proper meta tags, structured data, and sitemap
+- **Analytics integration** prepared for user behavior tracking and conversion optimization
+- **Monitoring dashboards** configured for application health and performance metrics
+- **Backup and recovery** procedures documented and tested for data protection
+Remember: This is an enterprise-grade application that will handle sensitive customer feedback data. Every implementation decision should prioritize security, performance, accessibility, and maintainability. The codebase should be structured to support a growing team of developers and evolving business requirements while maintaining the highest standards of code quality and user experience.
